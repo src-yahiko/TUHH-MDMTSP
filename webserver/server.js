@@ -25,32 +25,49 @@ server.listen(PORT, () => {
 const wss = new WebSocketServer({ server });
 
 wss.on('connection', (ws) => {
-  console.log('Client connected'); 
+  console.log('Client connected');
 
-  // Spawn the child process
-  const child = spawn('./public/myapp.exe', [...MYAPP_FLAGS.split(" ")]);
+  // // Spawn the child process
+  // const child = spawn('./public/myapp.exe', [...MYAPP_FLAGS.split(" ")]);
 
-  // Stream the output of the child process to the WebSocket
-  child.stdout.on('data', (data) => {
-    ws.send(data.toString());
-  });
+  // // Stream the output of the child process to the WebSocket
+  // child.stdout.on('data', (data) => {
+  //   ws.send(data.toString());
+  // });
 
-  child.stderr.on('data', (data) => {
-    ws.send(data.toString());
-  });
+  // child.stderr.on('data', (data) => {
+  //   ws.send(data.toString());
+  // });
 
-  child.on('close', (code) => {
-    ws.send(`Child process exited with code ${code}`);
-  });
+  // child.on('close', (code) => {
+  //   ws.send(`Child process exited with code ${code}`);
+  // });
 
   // Handle WebSocket messages from the client (if necessary)
   ws.on('message', (message) => {
-    console.log('Received:', message);
+    console.log('Received:', message.toString());
+
+    // Spawn the child process
+    const child = spawn('./public/myapp.exe', [...message.toString().split(" ")]);
+
+    // Stream the output of the child process to the WebSocket
+    child.stdout.on('data', (data) => {
+      ws.send(data.toString());
+    });
+
+    child.stderr.on('data', (data) => {
+      ws.send(data.toString());
+    });
+
+    child.on('close', (code) => {
+      ws.send(`Child process exited with code ${code}`);
+    });
+
   });
 
   // Handle client disconnect
   ws.on('close', () => {
     console.log('Client disconnected');
-    child.kill(); // Ensure the child process is killed if the client disconnects
+    // child.kill(); // Ensure the child process is killed if the client disconnects
   });
 });

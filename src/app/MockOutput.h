@@ -6,7 +6,7 @@
 
 class MockOutput {
 public:
-    void generateOutput() const {
+    static void generateOutput() {
         std::cout << "MockOutput is generating output..." << std::endl;
         sleep(1);
     }
