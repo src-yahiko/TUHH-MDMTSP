@@ -1,0 +1,4 @@
+{
+    "watch": ["server.js", "../build/myapp.exe"],
+    "exec": ". ../environment.sh; npm start"
+}
