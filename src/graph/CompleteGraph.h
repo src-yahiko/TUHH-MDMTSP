@@ -6,6 +6,7 @@
 #include <random>
 #include <utility>
 #include <cmath>
+#include <sstream>
 
 class CompleteGraph
 {
@@ -20,7 +21,7 @@ public:
             adjacencyMatrix[i][i] = 0.0;
     }
 
-    CompleteGraph(const std::vector<std::vector<double>>& matrix) : numVertices(matrix.size()), adjacencyMatrix(matrix) {};
+    CompleteGraph(const std::vector<std::vector<double>> &matrix) : numVertices(matrix.size()), adjacencyMatrix(matrix){};
 
     void printMatrix() const
     {
@@ -53,7 +54,7 @@ public:
         for (int i = 0; i < n; ++i)
         {
             for (int j = i + 1; j < n; ++j)
-            { 
+            {
                 double dx = coordinates[i].first - coordinates[j].first;
                 double dy = coordinates[i].second - coordinates[j].second;
                 double distance = std::sqrt(dx * dx + dy * dy);
@@ -65,11 +66,44 @@ public:
         return matrix;
     }
 
-    static void printCoordinates(const std::vector<std::pair<double, double>>& coordinates) {
+    static void printCoordinates(const std::vector<std::pair<double, double>> &coordinates)
+    {
         std::cout << "#MAP#" << coordinates.size();
-        for (const auto& coord : coordinates) {
-            std::cout << " " << coord.first << " " << coord.second;
+        for (const auto &coord : coordinates)
+        {
+            std::cout << "_" << coord.first << "_" << coord.second;
         }
+    }
+
+    static std::vector<std::pair<double, double>> parseCoordinates(const std::string &input)
+    {
+        std::vector<std::pair<double, double>> coordinates;
+        std::istringstream stream(input);
+        std::string token;
+        std::vector<std::string> tokens;
+        while (std::getline(stream, token, '_'))
+        {
+            tokens.push_back(token);
+        }
+
+        size_t numCoordinates;
+        std::istringstream(tokens[0]) >> numCoordinates;
+
+        if (tokens.size() != 1 + (numCoordinates * 2))
+        {
+            std::cerr << "Invalid input format." << std::endl;
+            return coordinates;
+        }
+
+        double x, y;
+        for (size_t i = 1; i < tokens.size(); i += 2)
+        {
+            std::istringstream(tokens[i]) >> x;
+            std::istringstream(tokens[i + 1]) >> y;
+            coordinates.emplace_back(x, y);
+        }
+
+        return coordinates;
     }
 };
 
