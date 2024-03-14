@@ -46,6 +46,13 @@ function draw() {
     background(250);
     fill(0);
     vertices.forEach(vertex => vertex.render());
+    app.graph.edges.forEach(e => {
+        const v_from = vertices[e[0]]
+        const v_to = vertices[e[1]]
+        const idx_col = "#" + e[2];
+        stroke(idx_col)
+        line(v_from.x, v_from.y, v_to.x, v_to.y)
+    })
 }
 
 function mousePressed() {

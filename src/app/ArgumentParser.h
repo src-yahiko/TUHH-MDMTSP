@@ -7,21 +7,14 @@
 
 class ArgumentParser
 {
-private:
-    bool testing = false;
 
 public:
     ArgumentParser(int &argc, char **argv)
     {
-        parseArguments(argc, argv);
+        // parseArguments(argc, argv);
     }
 
-    void parseArguments(int &argc, char **argv);
-
-    bool isTest() const
-    {
-        return testing;
-    }
+    // void parseArguments(int &argc, char **argv);
 
     static bool checkFlagWithInt(int argc, char **argv, const std::string &flag, int *value)
     {

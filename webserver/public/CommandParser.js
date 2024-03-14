@@ -42,3 +42,16 @@ parser.registerCommand("MAP", (mapLength, ...coords) => {
     app.graph.map = map
     setup()
 });
+
+parser.registerCommand("MST", (mapLength, ...params) => {
+    const mapLengthInt = parseInt(mapLength, 10);
+    const map = [];
+    for (let i = 0; i < mapLengthInt; i++) {
+        const a = parseInt(params[i * 3]);
+        const b = parseInt(params[i * 3 + 1]);
+        const color = params[i * 3 + 2].trim()
+        map.push([a, b, color]);
+    }
+    app.graph.edges = map
+    // setup()
+});

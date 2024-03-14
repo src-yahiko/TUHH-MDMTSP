@@ -29,7 +29,7 @@ wss.on('connection', (ws) => {
 
   // Spawn the child process
   // const child = spawn('./public/myapp.exe', [...MYAPP_FLAGS.split(" ")]);
-  const child = spawn('./public/myapp.exe', ["-m", "10"]);
+  const child = spawn('./public/myapp.exe', ["-c", "10"]);
 
   // Stream the output of the child process to the WebSocket
   child.stdout.on('data', (data) => {

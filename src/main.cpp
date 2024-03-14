@@ -1,37 +1,30 @@
 #include "app/ArgumentParser.h"
-#include "app/MockOutput.h"
-#include "graph/CompleteGraph.h"
-#include <string.h>
+#include "graph/Graph.h"
+
+using namespace std;
 
 int main(int argc, char **argv)
 {
     ArgumentParser parser(argc, argv);
 
-    if (parser.isTest())
+    int numberOfNodes = -1;
+    if (parser.checkFlagWithInt(argc, argv, "-c", &numberOfNodes))
     {
-        std::cout << "Test mode activated." << std::endl;
-        MockOutput::generateOutput();
-        return 0;
-    }
-
-    int generateMap = -1;
-    if (parser.checkFlagWithInt(argc, argv, "-m", &generateMap))
-    {
-        if (generateMap <= 0 || generateMap > 20)
+        if (numberOfNodes <= 0 || numberOfNodes > 30)
             return 1;
 
-        auto map = CompleteGraph::getRandomCoordinates(generateMap);
-        CompleteGraph::printCoordinates(map);
+        CompleteGraph graph = CompleteGraph(numberOfNodes);
+        graph.printNodes();
         return 0;
     }
 
-    std::string inputCoordinates = "";
-    if (parser.checkFlagWithString(argc, argv, "-g", &inputCoordinates))
+    string inputNodes = "";
+    if (parser.checkFlagWithString(argc, argv, "-i", &inputNodes))
     {
-        auto coordinates = CompleteGraph::parseCoordinates(inputCoordinates);
-        auto matrix = CompleteGraph::adjacencyMatrixFromCoordinates(coordinates);
-        CompleteGraph graph(matrix);
-        graph.printMatrix();
+        vector<Node> nodes = CompleteGraph::parsePositions(inputNodes);
+        CompleteGraph graph = CompleteGraph(nodes);
+        vector<Edge> mst = graph.MstKruskal();
+        graph.printMst(mst);
         return 0;
     }
 
