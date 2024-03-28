@@ -1,32 +1,12 @@
-#include "app/ArgumentParser.h"
-#include "graph/Graph.h"
+#include "graph.cpp"
 
-using namespace std;
-
-int main(int argc, char **argv)
-{
-    ArgumentParser parser(argc, argv);
-
-    int numberOfNodes = -1;
-    if (parser.checkFlagWithInt(argc, argv, "-c", &numberOfNodes))
-    {
-        if (numberOfNodes <= 0 || numberOfNodes > 30)
-            return 1;
-
-        CompleteGraph graph = CompleteGraph(numberOfNodes);
-        graph.printNodes();
-        return 0;
-    }
-
-    string inputNodes = "";
-    if (parser.checkFlagWithString(argc, argv, "-i", &inputNodes))
-    {
-        vector<Node> nodes = CompleteGraph::parsePositions(inputNodes);
-        CompleteGraph graph = CompleteGraph(nodes);
-        vector<Edge> mst = graph.MstKruskal();
-        graph.printMst(mst);
-        return 0;
-    }
-
+int main() {
+    Graph g = Graph(5);
+    Node a = g.addNode(1, 1);
+    Node b = g.addNode(2, 2);
+    double d = g.addEdge(a, b);
+    std::cout << a.id << std::endl;
+    std::cout << b.id << std::endl;
+    std::cout << d << std::endl;
     return 0;
 }
