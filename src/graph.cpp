@@ -2,6 +2,47 @@
 #include <algorithm>
 #include <iostream>
 
+void UnionFind::makeSet(unsigned int n)
+{
+    for (unsigned int i = 0; i < n; ++i)
+    {
+        parent[i] = i;
+        rank[i] = 0;
+    }
+}
+
+unsigned int UnionFind::find(unsigned int i)
+{
+    if (parent[i] != i)
+    {
+        parent[i] = find(parent[i]);
+    }
+    return parent[i];
+}
+
+void UnionFind::unionSet(unsigned int x, unsigned int y)
+{
+    unsigned int rootX = find(x);
+    unsigned int rootY = find(y);
+
+    if (rootX != rootY)
+    {
+        if (rank[rootX] < rank[rootY])
+        {
+            parent[rootX] = rootY;
+        }
+        else if (rank[rootX] > rank[rootY])
+        {
+            parent[rootY] = rootX;
+        }
+        else
+        {
+            parent[rootY] = rootX;
+            rank[rootX] += 1;
+        }
+    }
+}
+
 AdjacencyMatrix::AdjacencyMatrix(std::vector<Edge> edges)
 {
     for (const auto &edge : edges)
@@ -71,6 +112,9 @@ void Graph::addNode(unsigned int nodeId)
 void Graph::removeNode(unsigned int nodeId)
 {
     nodes.erase(nodeId);
+
+    edges.erase(std::remove_if(edges.begin(), edges.end(), [&](const Edge edge)
+                               { return edge.from == nodeId || edge.to == nodeId; }));
 }
 
 void Graph::addNodes(const std::vector<unsigned int> nodeList)
@@ -131,4 +175,35 @@ std::vector<unsigned int> Graph::getNodes() const
 std::vector<Edge> Graph::getEdges() const
 {
     return edges;
+}
+
+void Graph::toKruskalMST()
+{
+    std::vector<Edge> sortedEdges(edges);
+    std::sort(sortedEdges.begin(), sortedEdges.end(), Edge::compare);
+
+    UnionFind uf;
+    uf.makeSet(nodes.size());
+    std::vector<Edge> mstEdges;
+
+    std::set<unsigned int> mstNodes;
+    for (const Edge &edge : sortedEdges)
+    {
+        unsigned int fromParent = uf.find(edge.from);
+        unsigned int toParent = uf.find(edge.to);
+
+        if (fromParent != toParent)
+        {
+            mstEdges.push_back(edge);
+            uf.unionSet(fromParent, toParent);
+
+            mstNodes.insert(edge.from);
+            mstNodes.insert(edge.to);
+        }
+    }
+
+    edges = std::move(mstEdges);
+    nodes = std::move(mstNodes);
+
+    matrix = AdjacencyMatrix(edges);
 }

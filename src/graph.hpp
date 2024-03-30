@@ -11,6 +11,21 @@ struct Edge
     double weight;
 
     Edge(unsigned f, unsigned t, double w) : from(f < t ? f : t), to(f >= t ? f : t), weight(w){};
+    static bool compare(const Edge &lhs, const Edge &rhs)
+    {
+        return lhs.weight < rhs.weight;
+    }
+};
+
+class UnionFind
+{
+    std::map<unsigned int, unsigned int> parent;
+    std::map<unsigned int, unsigned int> rank;
+
+public:
+    void makeSet(unsigned int);
+    unsigned int find(unsigned int);
+    void unionSet(unsigned int, unsigned int);
 };
 
 class AdjacencyMatrix
@@ -45,6 +60,7 @@ public:
     void removeEdges(const std::vector<Edge>);
     std::vector<unsigned int> getNodes() const;
     std::vector<Edge> getEdges() const;
+    void toKruskalMST();
 };
 
 #endif
