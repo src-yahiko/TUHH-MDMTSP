@@ -10,9 +10,7 @@ OBJECTS = $(patsubst $(SRC_DIR)/%,$(BUILD_DIR)/%,$(SOURCES:.cpp=.o))
 
 TARGET = $(BUILD_DIR)/myapp.exe
 
-.PHONY: all clean rebuild
-
-all: rebuild
+.PHONY: clean rebuild run
 
 rebuild: clean $(TARGET)
 
@@ -26,3 +24,6 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 
 clean:
 	rm -rf $(BUILD_DIR)
+
+run: rebuild
+	./$(TARGET)
