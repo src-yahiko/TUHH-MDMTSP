@@ -1,15 +1,8 @@
-#ifndef TYPES_H
-#define TYPES_H
+#ifndef TYPES_HPP
+#define TYPES_HPP
 
 #include <map>
 #include <vector>
-
-struct Node
-{
-    double x, y;
-
-    Node(double x, double y, unsigned int id) : x(x), y(y){};
-};
 
 struct Edge
 {

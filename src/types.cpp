@@ -1,4 +1,4 @@
-#include "types.h"
+#include "types.hpp"
 
 AdjacencyMatrix::AdjacencyMatrix(std::vector<Edge> edges)
 {
