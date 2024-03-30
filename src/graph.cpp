@@ -8,9 +8,9 @@ static double randomNumber()
     return dis(gen);
 };
 
-// static double distance(Node a, Node b)
-// {
-//     double dx = b.x - a.x;
-//     double dy = b.y - a.y;
-//     return std::sqrt(dx * dx + dy * dy);
-// };
+static double distance(double ax, double ay, double bx, double by)
+{
+    double dx = bx - ax;
+    double dy = by - ay;
+    return std::sqrt(dx * dx + dy * dy);
+};

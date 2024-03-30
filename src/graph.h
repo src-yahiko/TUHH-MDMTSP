@@ -6,6 +6,11 @@
 
 static double randomNumber();
 
-// static double distance(Node a, Node b);
+static double distance(double, double, double, double);
+
+class Graph {
+    std::map<unsigned int, Node> matrix;
+    std::vector<Edge> edges;
+};
 
 #endif
