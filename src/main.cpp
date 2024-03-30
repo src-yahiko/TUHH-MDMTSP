@@ -1,3 +1,4 @@
+#include "types.hpp"
 #include "graph.hpp"
 
 #include <iostream>

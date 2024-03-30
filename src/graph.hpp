@@ -11,6 +11,7 @@ class Graph
     AdjacencyMatrix matrix;
 
 public:
+    Graph() {};
     bool nodeExists(unsigned int) const;
     void addNode(unsigned int);
     void removeNode(unsigned int);
