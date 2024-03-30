@@ -1,5 +1,4 @@
-#include "types.hpp"
-#include "graph.hpp"
+#include "graph.cpp"
 
 #include <iostream>
 #include <random>
@@ -29,8 +28,8 @@ static std::vector<Point> randomPoints(unsigned int size)
     std::vector<Point> points;
 
     for (unsigned int i = 0; i < size; ++i)
-        points[i] = Point{randomNumber(), randomNumber()};
-    
+        points.emplace_back(Point{randomNumber(), randomNumber()});
+
     return points;
 }
 
@@ -43,8 +42,11 @@ int main()
         g.addNode(i);
 
     for (unsigned int i = 0; i < cities.size(); ++i)
-        for (unsigned int j = i + 1; i < cities.size(); ++j)
+        for (unsigned int j = i + 1; j < cities.size(); ++j)
             g.addEdge(i, j, distance(cities[i].x, cities[i].y, cities[j].x, cities[j].y));
 
+    auto edges = g.getEdges();
+    for (Edge &edge : edges)
+        std::cout << edge.from << " - " << edge.to << " : " << edge.weight << std::endl;
     return 0;
 };

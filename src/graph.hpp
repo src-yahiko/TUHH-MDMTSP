@@ -1,9 +1,31 @@
 #ifndef GRAPH_HPP
 #define GRAPH_HPP
 
-#include "types.hpp"
+#include <map>
 #include <set>
+#include <vector>
 
+struct Edge
+{
+    unsigned int from, to;
+    double weight;
+
+    Edge(unsigned f, unsigned t, double w) : from(f < t ? f : t), to(f >= t ? f : t), weight(w){};
+};
+
+class AdjacencyMatrix
+{
+    std::map<unsigned int, std::map<unsigned int, double>> matrix;
+
+public:
+    AdjacencyMatrix(){};
+    AdjacencyMatrix(std::vector<Edge>);
+    void addEdge(unsigned int, unsigned int, double);
+    void removeEdge(unsigned int, unsigned int);
+    std::vector<Edge> getEdgesOf(unsigned int) const;
+    unsigned int getDegreeOf(unsigned int) const;
+    double getWeightOf(unsigned int, unsigned int) const;
+};
 class Graph
 {
     std::set<unsigned int> nodes;
@@ -11,7 +33,7 @@ class Graph
     AdjacencyMatrix matrix;
 
 public:
-    Graph() {};
+    Graph();
     bool nodeExists(unsigned int) const;
     void addNode(unsigned int);
     void removeNode(unsigned int);
@@ -23,7 +45,6 @@ public:
     void removeEdges(const std::vector<Edge>);
     std::vector<unsigned int> getNodes() const;
     std::vector<Edge> getEdges() const;
-
 };
 
 #endif
