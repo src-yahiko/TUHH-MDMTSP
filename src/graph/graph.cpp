@@ -1,6 +1,5 @@
 #include "graph.hpp"
 #include <algorithm>
-#define NODE_NOT_FOUND __INT_MAX__
 
 double Graph::tourCost(const std::vector<Edge> tour)
 {
@@ -84,41 +83,4 @@ Graph Graph::exportCsf(const std::vector<int> depots) const
     csfGraph = csfGraph.exportMst();
     csfGraph.removeNode(tempNode);
     return csfGraph;
-}
-
-int UnionFind::find(int nodeId)
-{
-    if (parent.find(nodeId) == parent.end())
-        return NODE_NOT_FOUND;
-
-    if (parent[nodeId] != nodeId)
-        parent[nodeId] = find(parent[nodeId]);
-
-    return parent[nodeId];
-}
-
-void UnionFind::unite(int nodeA, int nodeB)
-{
-    int rootA = find(nodeA);
-    int rootB = find(nodeB);
-
-    if (rootA == NODE_NOT_FOUND || rootB == NODE_NOT_FOUND)
-        return;
-
-    if (rootA == rootB)
-        return;
-
-    if (rank[rootA] < rank[rootB])
-    {
-        parent[rootA] = rootB;
-    }
-    else if (rank[rootA] > rank[rootB])
-    {
-        parent[rootB] = rootA;
-    }
-    else
-    {
-        parent[rootB] = rootA;
-        rank[rootA]++;
-    }
 }
