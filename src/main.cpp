@@ -1,5 +1,4 @@
 #include "graph.cpp"
-#include "mdmtsp.cpp"
 
 #include <iostream>
 #include <random>
@@ -24,68 +23,47 @@ static double distance(double ax, double ay, double bx, double by)
     return std::sqrt(dx * dx + dy * dy);
 };
 
-static std::vector<Point> randomPoints(unsigned int size)
+void printPoints(std::vector<Point> points)
 {
-    std::vector<Point> points;
+    for (std::vector<Point>::size_type i = 0; i < points.size(); ++i)
+        std::cout << "#POINT#" << i << "_" << points[i].x << "_" << points[i].y << std::endl;
+}
 
-    for (unsigned int i = 0; i < size; ++i)
-        points.emplace_back(Point{randomNumber(), randomNumber()});
-
-    return points;
+void printDepots(std::vector<int> nodes)
+{
+    for (const auto &node : nodes)
+        std::cout << "#DEPOT#" << node << std::endl;
 }
 
 void printEdges(std::vector<Edge> edges)
 {
-    std::cout << "EDGES" << std::endl;
-    std::cout << edges.size() << std::endl;
     for (const auto &edge : edges)
-        std::cout << edge.from << " " << edge.to << " " << edge.weight << std::endl;
-}
-
-void printDepots(std::vector<unsigned int> nodes)
-{
-    std::cout << "DEPOTS" << std::endl;
-    std::cout << nodes.size() << std::endl;
-    for (const auto &node : nodes)
-        std::cout << node << std::endl;
-}
-
-void printPoints(std::vector<Point> points)
-{
-    std::cout << "POINTS" << std::endl;
-    std::cout << points.size() << std::endl;
-    for (std::vector<Point>::size_type i = 0; i < points.size(); ++i)
-        std::cout << i << " " << points[i].x << " " << points[i].y << std::endl;
+        std::cout << "#EDGE#" << edge.from << "_" << edge.to << "_" << edge.weight << std::endl;
 }
 
 int main()
 {
-    std::vector<Point> cities = randomPoints(20);
-    std::vector<unsigned int> depots;
+    int numCities = 20;
+    std::vector<Point> cities;
+    std::vector<int> depots;
+
+    for (int i = 0; i < numCities; ++i)
+        cities.emplace_back(Point{randomNumber(), randomNumber()});
 
     Graph g = Graph();
 
-    for (unsigned int i = 0; i < cities.size(); ++i)
+    for (int i = 0; i < numCities; ++i)
     {
-        g.addNode(i);
-        if (randomNumber() > .8)
+        if (randomNumber() > .85)
             depots.push_back(i);
+
+        for (int j = i + 1; j < numCities; ++j)
+            g.addEdge(i, j, distance(cities[i].x, cities[i].y, cities[j].x, cities[j].y));
     }
 
-    for (unsigned int i = 0; i < cities.size(); ++i)
-        for (unsigned int j = i + 1; j < cities.size(); ++j)
-            g.addEdge(i, j, distance(cities[i].x, cities[i].y, cities[j].x, cities[j].y));
-
-    MDMTSP mdmtsp = MDMTSP(g);
-    for (unsigned int depotId : depots)
-        mdmtsp.addDepot(depotId);
-
-    Graph _g_csf = mdmtsp.csf();
-    // for (Edge &edge : _g_csf.getEdges())
-    //     std::cout << edge.from << " - " << edge.to << " : " << edge.weight << std::endl;
-
+    std::cout << "#RESET#" << std::endl;
     printPoints(cities);
-    printEdges(_g_csf.getEdges());
-    printDepots(mdmtsp.getDepots());
+    printDepots(depots);
+    printEdges(g.exportCsf(depots).getEdges());
     return 0;
-};
+}

@@ -17,6 +17,7 @@ function printCoordinates() {
     return command
 }
 
+
 // document.addEventListener('DOMContentLoaded', () => {
 //     document.getElementById("interface_validate").addEventListener('click', (e) => {
 //         sendData(printCoordinates());
@@ -24,18 +25,18 @@ function printCoordinates() {
 // });
 
 
-const toggleMST = () => {
-    app.mst = !app.mst
-    if (app.mst == true)
-     {
-        document.getElementById("interface_toggleMST").style.backgroundColor = "green";
-     } else {
-         document.getElementById("interface_toggleMST").style.backgroundColor = "black";
-        }
-}
+// const toggleMST = () => {
+//     app.mst = !app.mst
+//     if (app.mst == true)
+//      {
+//         document.getElementById("interface_toggleMST").style.backgroundColor = "green";
+//      } else {
+//          document.getElementById("interface_toggleMST").style.backgroundColor = "black";
+//         }
+// }
 
-const MST = () => {
-    sendData(printCoordinates())
-}
+// const MST = () => {
+//     sendData(printCoordinates())
+// }
 
-const interval = setInterval(() => { if (app.mst == true) { sendData(printCoordinates()) } }, 400)
+// const interval = setInterval(() => { if (app.mst == true) { sendData(printCoordinates()) } }, 400)

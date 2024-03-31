@@ -1,209 +1,124 @@
 #include "graph.hpp"
 #include <algorithm>
-#include <iostream>
+#define NODE_NOT_FOUND __INT_MAX__
 
-void UnionFind::makeSet(unsigned int n)
+double Graph::tourCost(const std::vector<Edge> tour)
 {
-    for (unsigned int i = 0; i < n; ++i)
-    {
-        parent[i] = i;
-        rank[i] = 0;
-    }
+    double weight = 0;
+    for (const auto &edge : tour)
+        weight += edge.weight;
+    return weight;
 }
 
-unsigned int UnionFind::find(unsigned int i)
-{
-    if (parent[i] != i)
-    {
-        parent[i] = find(parent[i]);
-    }
-    return parent[i];
-}
-
-void UnionFind::unionSet(unsigned int x, unsigned int y)
-{
-    unsigned int rootX = find(x);
-    unsigned int rootY = find(y);
-
-    if (rootX != rootY)
-    {
-        if (rank[rootX] < rank[rootY])
-        {
-            parent[rootX] = rootY;
-        }
-        else if (rank[rootX] > rank[rootY])
-        {
-            parent[rootY] = rootX;
-        }
-        else
-        {
-            parent[rootY] = rootX;
-            rank[rootX] += 1;
-        }
-    }
-}
-
-AdjacencyMatrix::AdjacencyMatrix(std::vector<Edge> edges)
-{
-    for (const auto &edge : edges)
-        addEdge(edge.from, edge.to, edge.weight);
-}
-
-void AdjacencyMatrix::addEdge(unsigned int fromId, unsigned int toId, double weight)
+void Graph::addEdge(int fromId, int toId, double weight)
 {
     matrix[fromId][toId] = weight;
     matrix[toId][fromId] = weight;
 }
 
-void AdjacencyMatrix::removeEdge(unsigned int fromId, unsigned int toId)
+void Graph::removeNode(int targetId)
+{
+    matrix.erase(targetId);
+    for (auto &row : matrix)
+        row.second.erase(targetId);
+}
+
+void Graph::removeEdge(int fromId, int toId)
 {
     matrix[fromId].erase(toId);
     matrix[toId].erase(fromId);
 }
 
-std::vector<Edge> AdjacencyMatrix::getEdgesOf(unsigned int nodeId) const
-{
-    std::vector<Edge> edges;
-    auto it = matrix.find(nodeId);
-    if (it != matrix.end())
-        for (const auto &adj : it->second)
-            edges.emplace_back(nodeId, adj.first, adj.second);
-
-    return edges;
-}
-
-unsigned int AdjacencyMatrix::getDegreeOf(unsigned int nodeId) const
-{
-    unsigned int size = 0;
-    auto it = matrix.find(nodeId);
-    if (it != matrix.end())
-        size = (it->second).size();
-    return size;
-}
-
-double AdjacencyMatrix::getWeightOf(unsigned int fromId, unsigned int toId) const
-{
-    auto fromIt = matrix.find(fromId);
-    if (fromIt == matrix.end())
-        return -1;
-
-    auto toIt = fromIt->second.find(toId);
-    if (toIt == fromIt->second.end())
-        return -1;
-
-    return toIt->second;
-}
-
-Graph::Graph(){};
-
-bool Graph::nodeExists(unsigned int nodeId) const
-{
-    auto it = nodes.find(nodeId);
-    if (it != nodes.end())
-        return true;
-    return false;
-}
-
-void Graph::addNode(unsigned int nodeId)
-{
-    nodes.insert(nodeId);
-}
-
-void Graph::removeNode(unsigned int nodeId)
-{
-    nodes.erase(nodeId);
-
-    edges.erase(std::remove_if(edges.begin(), edges.end(), [&](const Edge edge)
-                               { return edge.from == nodeId || edge.to == nodeId; }));
-}
-
-void Graph::addNodes(const std::vector<unsigned int> nodeList)
-{
-    for (const auto &node : nodeList)
-        addNode(node);
-}
-
-void Graph::removeNodes(const std::vector<unsigned int> nodeList)
-{
-    for (const auto &node : nodeList)
-        removeNode(node);
-}
-
-void Graph::addEdge(unsigned int fromId, unsigned int toId, double weight)
-{
-    if (!nodeExists(fromId))
-        addNode(fromId);
-
-    if (!nodeExists(toId))
-        addNode(toId);
-
-    edges.emplace_back(fromId, toId, weight);
-    matrix.addEdge(fromId, toId, weight);
-}
-
-void Graph::removeEdge(unsigned int fromId, unsigned int toId, double weight)
-{
-    Edge cmp = Edge(fromId, toId, weight);
-
-    edges.erase(std::remove_if(edges.begin(), edges.end(), [&](Edge edge)
-                               { return cmp.from == edge.from && cmp.to == edge.to && cmp.weight == edge.weight; }));
-    matrix.removeEdge(fromId, toId);
-}
-
-void Graph::addEdges(std::vector<Edge> edgeList)
-{
-    for (const auto &edge : edgeList)
-        addEdge(edge.from, edge.to, edge.weight);
-}
-
-void Graph::removeEdges(std::vector<Edge> edgeList)
-{
-    for (const auto &edge : edgeList)
-        removeEdge(edge.from, edge.to, edge.weight);
-}
-
-std::vector<unsigned int> Graph::getNodes() const
-{
-    std::vector<unsigned int> nodeIDs;
-
-    for (const auto &nodeId : nodes)
-        nodeIDs.push_back(nodeId);
-
-    return nodeIDs;
-}
-
 std::vector<Edge> Graph::getEdges() const
 {
+    std::vector<Edge> edges;
+    for (const auto &row : matrix)
+    {
+        int fromId = row.first;
+        for (const auto &elem : row.second)
+        {
+            int toId = elem.first;
+            double weight = elem.second;
+            if (fromId > toId || weight == -1)
+                continue;
+            edges.emplace_back(fromId, toId, weight);
+        }
+    }
     return edges;
 }
 
-void Graph::toKruskalMST()
+Graph Graph::exportMst() const
 {
-    std::vector<Edge> sortedEdges(edges);
-    std::sort(sortedEdges.begin(), sortedEdges.end(), Edge::compare);
+    Graph mstGraph = Graph();
+
+    std::vector<Edge> edges = getEdges();
+    std::sort(edges.begin(), edges.end());
 
     UnionFind uf;
-    uf.makeSet(nodes.size());
-    std::vector<Edge> mstEdges;
-
-    std::set<unsigned int> mstNodes;
-    for (const Edge &edge : sortedEdges)
+    for (const auto &pair : matrix)
     {
-        unsigned int fromParent = uf.find(edge.from);
-        unsigned int toParent = uf.find(edge.to);
+        int nodeId = pair.first;
+        uf.parent[nodeId] = nodeId;
+        uf.rank[nodeId] = 0;
+    }
 
-        if (fromParent != toParent)
+    for (const auto &edge : edges)
+    {
+        if (uf.find(edge.from) != uf.find(edge.to))
         {
-            mstEdges.push_back(edge);
-            uf.unionSet(fromParent, toParent);
-
-            mstNodes.insert(edge.from);
-            mstNodes.insert(edge.to);
+            uf.unite(edge.from, edge.to);
+            mstGraph.addEdge(edge.from, edge.to, edge.weight);
         }
     }
 
-    edges = std::move(mstEdges);
-    nodes = std::move(mstNodes);
+    return mstGraph;
+}
 
-    matrix = AdjacencyMatrix(edges);
+Graph Graph::exportCsf(const std::vector<int> depots) const
+{
+    Graph csfGraph = Graph(matrix);
+    int tempNode = -1;
+    for (const auto &depotId : depots)
+        csfGraph.addEdge(tempNode, depotId, 0);
+
+    csfGraph = csfGraph.exportMst();
+    csfGraph.removeNode(tempNode);
+    return csfGraph;
+}
+
+int UnionFind::find(int nodeId)
+{
+    if (parent.find(nodeId) == parent.end())
+        return NODE_NOT_FOUND;
+
+    if (parent[nodeId] != nodeId)
+        parent[nodeId] = find(parent[nodeId]);
+
+    return parent[nodeId];
+}
+
+void UnionFind::unite(int nodeA, int nodeB)
+{
+    int rootA = find(nodeA);
+    int rootB = find(nodeB);
+
+    if (rootA == NODE_NOT_FOUND || rootB == NODE_NOT_FOUND)
+        return;
+
+    if (rootA == rootB)
+        return;
+
+    if (rank[rootA] < rank[rootB])
+    {
+        parent[rootA] = rootB;
+    }
+    else if (rank[rootA] > rank[rootB])
+    {
+        parent[rootB] = rootA;
+    }
+    else
+    {
+        parent[rootB] = rootA;
+        rank[rootA]++;
+    }
 }

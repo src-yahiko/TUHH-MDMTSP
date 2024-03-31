@@ -4,63 +4,47 @@
 #include <map>
 #include <set>
 #include <vector>
-
 struct Edge
 {
-    unsigned int from, to;
+    int from, to;
     double weight;
 
-    Edge(unsigned f, unsigned t, double w) : from(f < t ? f : t), to(f >= t ? f : t), weight(w){};
-    static bool compare(const Edge &lhs, const Edge &rhs)
+    Edge(int f, int t, double w) : from(std::min(f, t)), to(std::max(f, t)), weight(w) {}
+
+    bool operator<(const Edge &other) const
     {
-        return lhs.weight < rhs.weight;
+        if (weight == other.weight)
+        {
+            if (from == other.from)
+                return to < other.to;
+            return from < other.from;
+        }
+        return weight < other.weight;
     }
+};
+class Graph
+{
+    std::map<int, std::map<int, double>> matrix;
+
+public:
+    Graph(){};
+    Graph(std::map<int, std::map<int, double>> newMatrix) : matrix(newMatrix){};
+    static double tourCost(const std::vector<Edge>);
+    void addEdge(int, int, double);
+    void removeNode(int);
+    void removeEdge(int, int);
+    std::vector<Edge> getEdges() const;
+    Graph exportMst() const;
+    Graph exportCsf(const std::vector<int>) const;
 };
 
 class UnionFind
 {
-    std::map<unsigned int, unsigned int> parent;
-    std::map<unsigned int, unsigned int> rank;
-
 public:
-    void makeSet(unsigned int);
-    unsigned int find(unsigned int);
-    void unionSet(unsigned int, unsigned int);
-};
-
-class AdjacencyMatrix
-{
-    std::map<unsigned int, std::map<unsigned int, double>> matrix;
-
-public:
-    AdjacencyMatrix(){};
-    AdjacencyMatrix(std::vector<Edge>);
-    void addEdge(unsigned int, unsigned int, double);
-    void removeEdge(unsigned int, unsigned int);
-    std::vector<Edge> getEdgesOf(unsigned int) const;
-    unsigned int getDegreeOf(unsigned int) const;
-    double getWeightOf(unsigned int, unsigned int) const;
-};
-class Graph
-{
-    std::set<unsigned int> nodes;
-    std::vector<Edge> edges;
-    AdjacencyMatrix matrix;
-
-public:
-    Graph();
-    bool nodeExists(unsigned int) const;
-    void addNode(unsigned int);
-    void removeNode(unsigned int);
-    void addNodes(const std::vector<unsigned int>);
-    void removeNodes(const std::vector<unsigned int>);
-    void addEdge(unsigned int, unsigned int, double);
-    void removeEdge(unsigned int, unsigned int, double);
-    void addEdges(const std::vector<Edge>);
-    void removeEdges(const std::vector<Edge>);
-    std::vector<unsigned int> getNodes() const;
-    std::vector<Edge> getEdges() const;
-    void toKruskalMST();
+    std::map<int, int> parent;
+    std::map<int, int> rank;
+    int find(int);
+    void unite(int, int);
 };
 
 #endif

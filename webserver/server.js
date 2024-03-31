@@ -29,24 +29,24 @@ wss.on('connection', (ws) => {
 
   // Spawn the child process
   // const child = spawn('./public/myapp.exe', [...MYAPP_FLAGS.split(" ")]);
-  const child = spawn('./public/myapp.exe', ["-c", "10"]);
+  // const child = spawn('./public/myapp.exe');
 
   // Stream the output of the child process to the WebSocket
-  child.stdout.on('data', (data) => {
-    ws.send(data.toString());
-  });
+  // child.stdout.on('data', (data) => {
+  // ws.send(data.toString());
+  // });
 
-  child.stderr.on('data', (data) => {
-    ws.send(data.toString());
-  });
+  // child.stderr.on('data', (data) => {
+  // ws.send(data.toString());
+  // });
 
-  child.on('close', (code) => {
-    ws.send(`Child process exited with code ${code}`);
-  });
+  // child.on('close', (code) => {
+  // ws.send(`Exit code ${code}`);
+  // });
 
   // Handle WebSocket messages from the client (if necessary)
   ws.on('message', (message) => {
-    console.log('Received:', message.toString());
+    // console.log('Received:', message.toString());
 
     // Spawn the child process
     const child = spawn('./public/myapp.exe', [...message.toString().split(" ")]);
@@ -57,11 +57,13 @@ wss.on('connection', (ws) => {
     });
 
     child.stderr.on('data', (data) => {
+      console.log("err", data.toString())
       ws.send(data.toString());
     });
 
     child.on('close', (code) => {
-      ws.send(`Child process exited with code ${code}`);
+      console.log("Exit code", code)
+      ws.send(`Exit code ${code}`);
     });
 
   });
@@ -69,6 +71,7 @@ wss.on('connection', (ws) => {
   // Handle client disconnect
   ws.on('close', () => {
     console.log('Client disconnected');
+
     // child.kill(); // Ensure the child process is killed if the client disconnects
   });
 });
