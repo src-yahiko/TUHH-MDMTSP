@@ -1,6 +1,8 @@
 const ws = new WebSocket('wss://' + window.location.href.split("//")[1])
 const command_history = []
 let command_history_ptr = -1
+
+
 ws.onmessage = function (event) {
     outputElem.textContent += event.data.endsWith("\n") ? event.data : event.data + "\n";
     outputElem.scrollTop = outputElem.scrollHeight;
@@ -23,14 +25,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (inputElement.value && command_history.unshift(inputElement.value) > 10)
             command_history.pop()
-        
+
         command_history_ptr = -1
         inputElement.value = '';
     });
 
     document.getElementById("interface_flags").addEventListener('keydown', (event) => {
         const field = document.getElementById("interface_flags")
-        
+
         if (event.keyCode === 38) {
             event.preventDefault()
             command_history_ptr = Math.min(command_history.length - 1, ++command_history_ptr)

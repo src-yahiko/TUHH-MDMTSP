@@ -1,39 +1,69 @@
-#include "app/ArgumentParser.h"
-#include "app/MockOutput.h"
-#include "graph/CompleteGraph.h"
-#include <string.h>
+#include "graph.cpp"
 
-int main(int argc, char **argv)
+#include <iostream>
+#include <random>
+
+struct Point
 {
-    ArgumentParser parser(argc, argv);
+    double x, y;
+};
 
-    if (parser.isTest())
+static double randomNumber()
+{
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    std::uniform_real_distribution<double> dis(0.0, 1.0);
+    return dis(gen);
+};
+
+static double distance(double ax, double ay, double bx, double by)
+{
+    double dx = bx - ax;
+    double dy = by - ay;
+    return std::sqrt(dx * dx + dy * dy);
+};
+
+void printPoints(std::vector<Point> points)
+{
+    for (std::vector<Point>::size_type i = 0; i < points.size(); ++i)
+        std::cout << "#POINT#" << i << "_" << points[i].x << "_" << points[i].y << std::endl;
+}
+
+void printDepots(std::vector<int> nodes)
+{
+    for (const auto &node : nodes)
+        std::cout << "#DEPOT#" << node << std::endl;
+}
+
+void printEdges(std::vector<Edge> edges)
+{
+    for (const auto &edge : edges)
+        std::cout << "#EDGE#" << edge.from << "_" << edge.to << "_" << edge.weight << std::endl;
+}
+
+int main()
+{
+    int numCities = 20;
+    std::vector<Point> cities;
+    std::vector<int> depots;
+
+    for (int i = 0; i < numCities; ++i)
+        cities.emplace_back(Point{randomNumber(), randomNumber()});
+
+    Graph g = Graph();
+
+    for (int i = 0; i < numCities; ++i)
     {
-        std::cout << "Test mode activated." << std::endl;
-        MockOutput::generateOutput();
-        return 0;
+        if (randomNumber() > .85)
+            depots.push_back(i);
+
+        for (int j = i + 1; j < numCities; ++j)
+            g.addEdge(i, j, distance(cities[i].x, cities[i].y, cities[j].x, cities[j].y));
     }
 
-    int generateMap = -1;
-    if (parser.checkFlagWithInt(argc, argv, "-m", &generateMap))
-    {
-        if (generateMap <= 0 || generateMap > 20)
-            return 1;
-
-        auto map = CompleteGraph::getRandomCoordinates(generateMap);
-        CompleteGraph::printCoordinates(map);
-        return 0;
-    }
-
-    std::string inputCoordinates = "";
-    if (parser.checkFlagWithString(argc, argv, "-g", &inputCoordinates))
-    {
-        auto coordinates = CompleteGraph::parseCoordinates(inputCoordinates);
-        auto matrix = CompleteGraph::adjacencyMatrixFromCoordinates(coordinates);
-        CompleteGraph graph(matrix);
-        graph.printMatrix();
-        return 0;
-    }
-
+    std::cout << "#RESET#" << std::endl;
+    printPoints(cities);
+    printDepots(depots);
+    printEdges(g.exportCsf(depots).getEdges());
     return 0;
 }

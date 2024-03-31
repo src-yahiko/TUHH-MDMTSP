@@ -11,17 +11,27 @@ class CommandParser {
     }
 
     parse(data) {
-        if (!data.startsWith("#")) return;
+        data = data.split('\n');
+        data.forEach(line => {
 
-        const parts = data.slice(1).split("#");
-        const command = parts[0];
-        const parameters = parts[1] ? this.parseParameters(parts[1]) : [];
+            if (!line.startsWith("#")) {
+                if (line.startsWith("Exit code 0")) {
+                    console.log(line)
+                    setup()
+                }
+                return
+            };
 
-        if (command in this.handlers) {
-            this.handlers[command](...parameters);
-        } else {
-            console.warn(`No handler registered for command: ${command}`);
-        }
+            const parts = line.slice(1).split("#");
+            const command = parts[0];
+            const parameters = parts[1] ? this.parseParameters(parts[1]) : [];
+
+            if (command in this.handlers) {
+                this.handlers[command](...parameters);
+            } else {
+                console.warn(`No handler registered for command: ${command}`);
+            }
+        })
     }
 
     parseParameters(paramString) {
@@ -31,14 +41,19 @@ class CommandParser {
 
 const parser = new CommandParser()
 
-parser.registerCommand("MAP", (mapLength, ...coords) => {
-    const mapLengthInt = parseInt(mapLength, 10);
-    const map = [];
-    for (let i = 0; i < mapLengthInt; i++) {
-        const x = parseFloat(coords[i * 2]);
-        const y = parseFloat(coords[i * 2 + 1]);
-        map.push([x, y]);
-    }
-    app.graph.map = map
-    setup()
+parser.registerCommand("RESET", () => {
+    app.graph.map = {}
+    app.graph.edges = []
+});
+
+parser.registerCommand("POINT", (nodeId, ...coords) => {
+    app.graph.map[nodeId] = [...coords, false]
+});
+
+parser.registerCommand("DEPOT", (nodeId) => {
+    app.graph.map[nodeId][2] = true
+});
+
+parser.registerCommand("EDGE", (...fromToWeight) => {
+    app.graph.edges.push(fromToWeight)
 });
