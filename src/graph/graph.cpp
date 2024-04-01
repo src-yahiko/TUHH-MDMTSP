@@ -46,6 +46,15 @@ std::vector<Edge> Graph::getEdges() const
     return edges;
 }
 
+int Graph::nodeDegree(int nodeId)
+{
+    int degree = 0;
+    for (const auto &pair : matrix[nodeId])
+        if (pair.first != nodeId && pair.second >= 0)
+            degree++;
+    return degree;
+}
+
 Graph Graph::exportMst() const
 {
     Graph mstGraph = Graph();

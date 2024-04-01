@@ -15,6 +15,7 @@ public:
     void removeNode(int);
     void removeEdge(int, int);
     std::vector<Edge> getEdges() const;
+    int nodeDegree(int);
     Graph exportMst() const;
     Graph exportCsf(const std::vector<int>) const;
 };
