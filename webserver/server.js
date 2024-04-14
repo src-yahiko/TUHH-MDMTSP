@@ -49,22 +49,33 @@ wss.on('connection', (ws) => {
     // console.log('Received:', message.toString());
 
     // Spawn the child process
-    const child = spawn('./public/myapp.exe', [...message.toString().split(" ")]);
+    let child = false
+    try {
+      const cmd = JSON.parse(message.toString())
+      child = spawn('../build/myapp.exe', [cmd.command, ...cmd.params]);
+    } catch {
+      // child = spawn('../build/myapp.exe', [...message.toString().split(" ")]);
+    } finally {
 
-    // Stream the output of the child process to the WebSocket
-    child.stdout.on('data', (data) => {
-      ws.send(data.toString());
-    });
+      if (child) {
 
-    child.stderr.on('data', (data) => {
-      console.log("err", data.toString())
-      ws.send(data.toString());
-    });
+        // Stream the output of the child process to the WebSocket
+        child.stdout.on('data', (data) => {
+          ws.send(data.toString());
+        });
 
-    child.on('close', (code) => {
-      console.log("Exit code", code)
-      ws.send(`Exit code ${code}`);
-    });
+        child.stderr.on('data', (data) => {
+          console.log("err", data.toString())
+          ws.send(data.toString());
+        });
+
+        child.on('close', (code) => {
+          console.log("Exit code", code)
+          ws.send(`Exit code ${code}`);
+        });
+      }
+    }
+
 
   });
 

@@ -18,6 +18,7 @@ class CommandParser {
                 if (line.startsWith("Exit code 0")) {
                     console.log(line)
                     setup()
+                    draw2()
                 }
                 return
             };
@@ -44,6 +45,7 @@ const parser = new CommandParser()
 parser.registerCommand("RESET", () => {
     app.graph.map = {}
     app.graph.edges = []
+    vertices = []
 });
 
 parser.registerCommand("POINT", (nodeId, ...coords) => {

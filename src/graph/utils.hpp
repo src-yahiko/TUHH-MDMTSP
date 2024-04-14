@@ -1,8 +1,6 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
-#define NODE_NOT_FOUND __INT_MAX__
-
 #include <map>
 #include <set>
 #include <vector>
@@ -56,6 +54,35 @@ std::vector<Point> generatePoints(int numCities)
     return cities;
 }
 
+void printPoints(std::vector<Point> points)
+{
+    for (std::vector<Point>::size_type i = 0; i < points.size(); ++i)
+        std::cout << "#POINT#" << i << "_" << points[i].x << "_" << points[i].y << std::endl;
+}
+
+void printPoints(std::map<int, Point> points)
+{
+    for (auto& p: points)
+        std::cout << "#POINT#" << p.first << "_" << p.second.x << "_" << p.second.y << std::endl;
+}
+
+void printDepots(std::vector<int> nodes)
+{
+    for (const auto &node : nodes)
+        std::cout << "#DEPOT#" << node << std::endl;
+}
+
+void printEdges(std::vector<Edge> edges)
+{
+    for (const auto &edge : edges)
+        std::cout << "#EDGE#" << edge.from << "_" << edge.to << "_" << edge.weight << std::endl;
+}
+
+void printReset()
+{
+    std::cout << "#RESET#" << std::endl;
+}
+
 class UnionFind
 {
 public:
@@ -65,7 +92,7 @@ public:
     int find(int nodeId)
     {
         if (parent.find(nodeId) == parent.end())
-            return NODE_NOT_FOUND;
+            return __INT_MAX__;
 
         if (parent[nodeId] != nodeId)
             parent[nodeId] = find(parent[nodeId]);
@@ -78,7 +105,7 @@ public:
         int rootA = find(nodeA);
         int rootB = find(nodeB);
 
-        if (rootA == NODE_NOT_FOUND || rootB == NODE_NOT_FOUND)
+        if (rootA == __INT_MAX__ || rootB == __INT_MAX__)
             return;
 
         if (rootA == rootB)
@@ -99,28 +126,5 @@ public:
         }
     }
 };
-
-void printPoints(std::vector<Point> points)
-{
-    for (std::vector<Point>::size_type i = 0; i < points.size(); ++i)
-        std::cout << "#POINT#" << i << "_" << points[i].x << "_" << points[i].y << std::endl;
-}
-
-void printDepots(std::vector<int> nodes)
-{
-    for (const auto &node : nodes)
-        std::cout << "#DEPOT#" << node << std::endl;
-}
-
-void printEdges(std::vector<Edge> edges)
-{
-    for (const auto &edge : edges)
-        std::cout << "#EDGE#" << edge.from << "_" << edge.to << "_" << edge.weight << std::endl;
-}
-
-void printReset()
-{
-    std::cout << "#RESET#" << std::endl;
-}
 
 #endif

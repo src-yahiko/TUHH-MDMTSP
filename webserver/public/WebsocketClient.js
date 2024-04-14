@@ -14,7 +14,12 @@ ws.onerror = function (event) {
 };
 
 function sendData(data) {
-    ws.send(data);
+    sendCommand(data)
+}
+
+function sendCommand(command, ...params) {
+    ws.send(JSON.stringify({ command, params }))
+    console.log({ command, params })
 }
 
 document.addEventListener('DOMContentLoaded', () => {

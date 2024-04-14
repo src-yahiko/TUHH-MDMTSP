@@ -1,5 +1,5 @@
 #!/bin/bash
-pwd
+original_dir=$(pwd)
 file_name="../build/myapp.exe"
 destination_dir="./public/myapp.exe"
 
@@ -20,4 +20,4 @@ fi
 export PORT=8443
 export MYAPP_FLAGS="--test"
 
-cd "$original_dir"
+# cd "$original_dir"
