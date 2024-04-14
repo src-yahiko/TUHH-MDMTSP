@@ -18,7 +18,6 @@ class CommandParser {
                 if (line.startsWith("Exit code 0")) {
                     console.log(line)
                     setup()
-                    draw2()
                 }
                 return
             };
