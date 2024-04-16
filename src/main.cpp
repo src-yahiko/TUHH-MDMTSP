@@ -30,7 +30,22 @@ int main(int argc, char *argv[])
             printReset();
             printPoints(app.cities);
             printDepots(app.getDepots());
-            printEdges(app.g.exportCsf(app.getDepots()).getEdges());
+            auto csfEdges = app.g.exportCsf(app.getDepots()).getEdges();
+            printEdges(csfEdges);
+            double w = 0;
+            for (auto &edge : csfEdges)
+                w += edge.weight;
+            double eps = 0.1;
+            std::cout << "Epsilon: " << eps << std::endl;
+            std::cout << "CSF weight: " << w << std::endl;
+            std::cout << "Depot count: " << app.getDepots().size() << std::endl;
+            double b = (eps / app.getDepots().size()) * w;
+            std::cout << "Heavy eps boundary: " << b << std::endl;
+            for (auto &edge : csfEdges)
+            {
+                if (edge.weight > b)
+                    std::cout << "Edge: " << edge.from << ", " << edge.to << ", " << edge.weight << std::endl;
+            }
         }
         else if (std::strcmp(argv[1], "DRPP") == 0)
         {

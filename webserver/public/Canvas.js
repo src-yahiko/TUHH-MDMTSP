@@ -1,10 +1,11 @@
 class Vertex {
-    constructor(x, y, depot) {
+    constructor(x, y, depot, id) {
         this.x = x;
         this.y = y;
         this.dragging = false;
         this.radius = 10
         this.isDepot = depot || false
+        this.id = id
     }
 
     render() {
@@ -52,22 +53,26 @@ function setup() {
     // vertices = Object.values(app.graph.map).map(p => new Vertex(p[0] * width, p[1] * height, p[2]));
     vertices = {}
     for (const [nodeId, p] of Object.entries(app.graph.map)) {
-        vertices[nodeId] = new Vertex(p[0] * width, p[1] * height, p[2])
+        vertices[nodeId] = new Vertex(p[0] * width, p[1] * height, p[2], nodeId)
     }
+    app.graph.edges.forEach(e => {
+        const v_from = vertices[e[0]]
+        const v_to = vertices[e[1]]
+        // const idx_col = 2.8 * e[2];
+        stroke(110)
+        // strokeWeight(idx_col)
+        line(v_from.x, v_from.y, v_to.x, v_to.y)
+    })
 }
 
 function draw() {
     // background();
     fill(0);
-    app.graph.edges.forEach(e => {
-        const v_from = vertices[e[0]]
-        const v_to = vertices[e[1]]
-        const idx_col = 2.8 * e[2];
-        stroke(110)
-        strokeWeight(idx_col)
-        line(v_from.x, v_from.y, v_to.x, v_to.y)
-    })
-    Object.values(vertices).map(vertex => vertex.render());
+    Object.values(vertices).map(vertex => {
+        vertex.render()
+        fill(100)
+        text(vertex.id, vertex.x + 5, vertex.y - 5)
+    });
 }
 
 // function mousePressed() {

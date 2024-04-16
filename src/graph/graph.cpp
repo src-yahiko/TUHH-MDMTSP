@@ -137,7 +137,6 @@ Graph Graph::exportRpp(std::map<int, std::map<int, double>> originalMatrix) cons
         for (size_t j = i + 1; j < oddNodes.size(); ++j)
         {
             double weight = edgeWeight(oddNodes[i], oddNodes[j], originalMatrix);
-            std::cout << i << " mit " << j << ": " << weight << " MIN:" << minimumWeight << std::endl;
             if (weight < minimumWeight)
             {
                 minimumWeight = weight;

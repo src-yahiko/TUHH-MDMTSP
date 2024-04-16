@@ -133,7 +133,7 @@ public:
         printReset();
         printPoints(cities);
         printDepots(depots);
-        printEdges(g.getEdges());
+        // printEdges(g.getEdges());
     }
 
     void randomGraph(int n)
@@ -156,7 +156,7 @@ public:
         printReset();
         printPoints(cities);
         printDepots(depots);
-        printEdges(g.getEdges());
+        // printEdges(g.getEdges());
     }
 
     void inputGraph(std::string fp, int r)
